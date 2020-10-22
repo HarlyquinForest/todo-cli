@@ -13,6 +13,7 @@ TODAY = datetime.datetime.now().strftime('%x')
 COMMAND = ['add' , 'list' , 'done' , 'alldone']
 TODAYNOTE = f'{APPDIR}today'
 TODAYDONE = f'{APPDIR}done'
+NOTECOUNTER = f'{APPDIR}note_counter'
 DONE = []
 
 def check_dir():
@@ -37,20 +38,20 @@ def file_validation() :
 
 def counter(inc=True):
 
-    if os.path.exists('/tmp/note_counter') :
-        f = open('/tmp/note_counter' , 'r')
+    if os.path.exists(NOTECOUNTER) :
+        f = open(NOTECOUNTER , 'r')
         t = f.readline()
         f.close()
         if inc : 
             c = int(str.rstrip(t)) + 1
-            f = open('/tmp/note_counter' , 'w')
+            f = open(NOTECOUNTER , 'w')
             f.write(str(c))
             f.close()
             return  c 
         else :
             return int(str.rstrip(t))
     else :
-        f = open('/tmp/note_counter' , 'w')
+        f = open(NOTECOUNTER , 'w')
         f.write(str(1))
         f.close()
         return 1 
@@ -157,6 +158,9 @@ def remove_items(nums):
     file.close()
     
 def main(argv):
+
+    if check_dir() == False :
+        sys.exit(2)
 
     #
     # command line arguments 
