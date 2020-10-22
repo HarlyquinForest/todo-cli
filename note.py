@@ -5,13 +5,26 @@ import os
 import sys , getopt
 from colors import Colors
 import argparse
+
+#Global variables 
 HOMEDIR = str(Path.home())
+APPDIR = f'{HOMEDIR}/.todo-cli/'
 TODAY = datetime.datetime.now().strftime('%x')
 COMMAND = ['add' , 'list' , 'done' , 'alldone']
-TODAYNOTE = f'{HOMEDIR}/today'
-TODAYDONE = f'{HOMEDIR}/done'
+TODAYNOTE = f'{APPDIR}today'
+TODAYDONE = f'{APPDIR}done'
 DONE = []
 
+def check_dir():
+    if os.path.exists(APPDIR) == False:
+        try : 
+            os.makedirs(APPDIR)
+            return True
+        except OSError : 
+            print("Couldn't create directory : "+APPDIR)
+            return False 
+    else :
+        return True
 
 def file_validation() : 
 
@@ -54,6 +67,10 @@ def done_items():
 def create_today():
     file = open(TODAYNOTE , 'w')
     file.write(TODAY+"\n")
+    file.close()
+
+    file = open(TODAYDONE , 'w')
+    file.writelines([])
     file.close()
 
 def write_file(text):
@@ -147,7 +164,7 @@ def main(argv):
     parser = argparse.ArgumentParser(description='Create to-do and shopping list' , usage='''note <command> [<args>]''')
     parser.add_argument('-n' , help='create new item in today list' , nargs='+')
     parser.add_argument('-l' , help='list all the items in today list' , nargs='?' , default='0' ,  const='1')
-    parser.add_argument('-d' , help='mark selected items from today list done ' , nargs='+')
+    parser.add_argument('-d' , help='mark selected items as done ' , nargs='+')
     parser.add_argument('-a' , help='using with -l make the list to present all the items of todo list . Default mode for -l option' , action='store_true' , default=True)
     parser.add_argument('-c' , help="using with -l make the list to present only completed items " , action='store_true')
     parser.add_argument('-u' , help='using with -l make the list to present only uncompleted items' , action='store_true')
