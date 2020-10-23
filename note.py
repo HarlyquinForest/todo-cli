@@ -74,6 +74,8 @@ def create_today():
     file.writelines([])
     file.close()
 
+    os.remove(NOTECOUNTER)
+
 def write_file(text):
     file = open(TODAYNOTE , 'a')
     file.write(str(COUNTER)+" "+text+"\n")
@@ -146,13 +148,12 @@ def remove_items(nums):
 
     for num in nums : 
         num = int(num)
-        if int(num) > len(lines) -1 :
-            num -= (int(num) - (len(lines) - 1) )
-        if num != 0 : 
+        item = lines[num].split(" ")
+        if num == int(item[0]):
             del(lines[num])
-            print(f"item {num} deleted")
-        else: 
-            print(f"There is no {num} index ")
+            print("selected item {num} deleted")
+        else :
+            print("selected item {num} dosen't exist")
     file = open(TODAYNOTE , 'w')
     file.writelines(lines)
     file.close()
@@ -221,10 +222,6 @@ def main(argv):
 
     if remove_arg is not None : 
         remove_items(remove_arg)
-
-    
-
-
 
 def split(word):
     return [char for char in word]
