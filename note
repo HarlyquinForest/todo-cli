@@ -1,0 +1,11 @@
+#!/usr/bin/env python3
+import note 
+import sys
+
+if __name__ == '__main__':
+    if not sys.argv[1:] :
+        sys.argv[1:] = ['-h']
+        sys.exit(note.main(sys.argv[1:]))
+    else :
+        sys.exit(note.main(sys.argv[1:]))
+    
