@@ -1,0 +1,11 @@
+#!/bin/bash
+
+
+installdir=$HOME"/.local/share/todo-cli" 
+
+mkdir $installdir &> /dev/null
+cp colors.py  note note.py $installdir
+
+ln -s $installdir/note ~/.local/bin/note
+
+echo "installation completed ! :-)"
