@@ -74,7 +74,8 @@ def create_today():
     file.writelines([])
     file.close()
 
-    os.remove(NOTECOUNTER)
+    if os.path.exists(NOTECOUNTER):
+        os.remove(NOTECOUNTER)
 
 def write_file(text):
     file = open(TODAYNOTE , 'a')
@@ -83,6 +84,9 @@ def write_file(text):
     print("OK")
 
 def read_file(all=True , complete = False , undone = False):
+    if not os.path.exists(TODAYNOTE):
+        print("There is nothing to show . Use -n to add new item")
+        return 
     done_items()
     file = open(TODAYNOTE , 'r')
     today_header = f'\n——— {TODAY} ———\n'
@@ -92,10 +96,11 @@ def read_file(all=True , complete = False , undone = False):
     file.seek(9)
     while(1):
         line = file.readline()
+        num = line.split(" ")[0]
         if( line == ''):
             break;
         counter +=1 
-        if counter in DONE and (complete == True or all == True )  : 
+        if int(num) in DONE and (complete == True or all == True )  : 
             print(Colors.CROSSED+" "+line + Colors.END , end="")
         elif all == True or undone == True and counter not in DONE: 
             print(" "+line,end="")
@@ -225,7 +230,3 @@ def main(argv):
 
 def split(word):
     return [char for char in word]
-
-
-if __name__ == "__main__":
-    main(sys.argv[1:])
