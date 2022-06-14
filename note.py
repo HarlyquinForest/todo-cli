@@ -5,6 +5,7 @@ import os
 import sys , getopt
 from colors import Colors
 import argparse
+from commands import Command
 
 #Global variables 
 HOMEDIR = str(Path.home())
@@ -16,6 +17,85 @@ TODAYDONE = f'{APPDIR}done'
 NOTECOUNTER = f'{APPDIR}note_counter'
 DONE = []
 
+def parseCommand(cmds):
+    command = Command(None)
+    
+    check_list_name = getCheckListName(cmds)
+    if check_list_name == '':
+        check_list_name = 'today'
+    
+    command = getCommandFrom(cmds)
+
+    return check_list_name ,command ; 
+
+def getCheckListName(cmds):
+    checklist = ''
+    for c in cmds : 
+        if Command.recognizeCommand(c) is not None:
+            break
+        checklist += c + ' '
+    return checklist.strip()
+
+def getCommandFrom(cmds):
+    cm = None
+    value = ''
+    for c in range(len(cmds)): 
+        if cm is None: 
+            cm = Command.recognizeCommand(cmds[c])
+        else: 
+            value += cmds[c] + ' '
+        c+=1
+        
+    return cm , value.strip()
+        
+
+
+def runCommands(checklist , command ):
+    output_message = ''
+    cmd = command[0]
+    value = command[1]
+
+    if cmd == Command.NEW: 
+        newCheckList(checklist)
+    elif cmd == Command.ADD: 
+        addNewItem(checklist, value)
+    elif cmd == Command.DEL: 
+        delCheckList(checklist)
+    elif cmd == Command.REM:
+        removeItem(checklist , value)
+    elif cmd == Command.DON: 
+        doneItem(checklist , value)
+    else: 
+        raise ValueError()
+    
+    return 
+
+def newCheckList(name):
+    createFile(name)
+def addNewItem(name , item):
+    write_file(name, item)
+def delCheckList(name):
+    if name == 'today':
+        print('today checklist can not be removed')
+        return 
+    delFile(f'{APPDIR}{name}')
+def doneItem(name , item):
+    pass 
+def removeItem(name , item):
+    pass
+def createFile(name):
+    try:
+        file = open(f'{APPDIR}{name}' , 'w')
+        file.write(name+'\n')
+        file.close()
+    except Exception():
+        tb = sys.exc_info()[2]
+        # raise OtherException(...).with_traceback(tb)
+def delFile(name):
+    if os.path.exists(name):
+        os.remove(name)
+    else:
+        raise FileExistsError()
 def check_dir():
     if os.path.exists(APPDIR) == False:
         try : 
@@ -77,9 +157,9 @@ def create_today():
     if os.path.exists(NOTECOUNTER):
         os.remove(NOTECOUNTER)
 
-def write_file(text):
-    file = open(TODAYNOTE , 'a')
-    file.write(str(COUNTER)+" "+text+"\n")
+def write_file(name , text):
+    file = open(f'{APPDIR}{name}' , 'a')
+    file.write(text+"\n")
     file.close()
     print("OK")
 
@@ -196,6 +276,9 @@ def main(argv):
     #
     # each argument instructions 
     #
+    parsed_commands = parseCommand(commands)
+    # print(parsed_commands)
+    runCommands(parsed_commands[0] , parsed_commands[1])
     if new_arg is not None : 
         message = ' '.join(new_arg)
         file_validation()
