@@ -1,10 +1,11 @@
 from enum import Enum
 class Command(Enum):
-    NEW = 0  
-    ADD = 1 
-    DEL = 2  
-    REM = 3 
-    DON = 4 
+    SHW = 0 
+    NEW = 1 
+    ADD = 2 
+    DEL = 3  
+    REM = 4 
+    DON = 5 
 
     def recognizeCommand(c):
         if c == 'new':
@@ -22,5 +23,5 @@ class Command(Enum):
 
     @classmethod
     def _missing_(cls , value):
-        return cls.NEW
+        return cls.SHW
 
