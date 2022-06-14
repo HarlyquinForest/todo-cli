@@ -101,9 +101,9 @@ def read_file(all=True , complete = False , undone = False):
             break;
         counter +=1 
         if int(num) in DONE and (complete == True or all == True )  : 
-            print(Colors.CROSSED+" "+line + Colors.END , end="")
+            print(Colors.GREEN + "■"+Colors.CROSSED+" "+line + Colors.END , end="")
         elif all == True or undone == True and counter not in DONE: 
-            print(" "+line,end="")
+            print(Colors.YELLOW+"□"+" "+line+Colors.END,end="")
         total +=1 
     today_footer = f'\n——— total {total} ———\n'
     print(today_footer)
