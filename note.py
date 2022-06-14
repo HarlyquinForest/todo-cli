@@ -45,7 +45,8 @@ def getCommandFrom(cmds):
         else: 
             value += cmds[c] + ' '
         c+=1
-        
+    if cm is None: 
+        cm = Command.SHW
     return cm , value.strip()
         
 
@@ -55,7 +56,9 @@ def runCommands(checklist , command ):
     cmd = command[0]
     value = command[1]
 
-    if cmd == Command.NEW: 
+    if cmd == Command.SHW: 
+        showList(checklist)
+    elif cmd == Command.NEW: 
         newCheckList(checklist)
     elif cmd == Command.ADD: 
         addNewItem(checklist, value)
@@ -69,7 +72,18 @@ def runCommands(checklist , command ):
         raise ValueError()
     
     return 
-
+def showList(name):
+    lines  = read_file(name)
+    print(colorizeForMe(lines))
+def colorizeForMe(text):
+    output = ''
+    output += f'\n{Colors.YELLOW}------ {text[0].strip()} ------\n'
+    for line in text[1:]:
+        if line[0] == '*':
+            output += f'{Colors.GREEN}   ■   {Colors.CROSSED}{line[1:]}{Colors.END}'
+        else: 
+            output += f'   □   {line}'
+    return output
 def newCheckList(name):
     createFile(name)
 def addNewItem(name , item):
@@ -80,7 +94,10 @@ def delCheckList(name):
         return 
     delFile(f'{APPDIR}{name}')
 def doneItem(name , item):
-    pass 
+    item = int(item)
+    lines = read_file(name) 
+    lines[item] = '*' + lines[item]
+    write_file(name, lines , mode='w')
 def removeItem(name , item):
     pass
 def createFile(name):
@@ -157,37 +174,23 @@ def create_today():
     if os.path.exists(NOTECOUNTER):
         os.remove(NOTECOUNTER)
 
-def write_file(name , text):
-    file = open(f'{APPDIR}{name}' , 'a')
-    file.write(text+"\n")
+def write_file(name , text ,  mode='a'):
+    file = open(f'{APPDIR}{name}' , mode)
+    if mode == 'w':
+        file.writelines(text)
+    else: 
+        file.write(text+"\n")
     file.close()
     print("OK")
 
-def read_file(all=True , complete = False , undone = False):
-    if not os.path.exists(TODAYNOTE):
-        print("There is nothing to show . Use -n to add new item")
+def read_file(name):
+    if not os.path.exists(f'{APPDIR}{name}'):
+        print("There is nothing to show.")
         return 
-    done_items()
-    file = open(TODAYNOTE , 'r')
-    today_header = f'\n——— {TODAY} ———\n'
-    print(today_header)
-    total = 0 
-    counter = 0
-    file.seek(9)
-    while(1):
-        line = file.readline()
-        num = line.split(" ")[0]
-        if( line == ''):
-            break;
-        counter +=1 
-        if int(num) in DONE and (complete == True or all == True )  : 
-            print(Colors.GREEN + "■"+Colors.CROSSED+" "+line + Colors.END , end="")
-        elif all == True or undone == True and counter not in DONE: 
-            print(Colors.YELLOW+"□"+" "+line+Colors.END,end="")
-        total +=1 
-    today_footer = f'\n——— total {total} ———\n'
-    print(today_footer)
+    file = open(f'{APPDIR}{name}' , 'r')
+    data = file.readlines()
     file.close()
+    return data
 
 def done(nums):
     print(f'{nums} marked as done.')
