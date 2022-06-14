@@ -171,8 +171,9 @@ def main(argv):
     #
     # command line arguments 
     #
-    parser = argparse.ArgumentParser(description='Create to-do and shopping list' , usage='''note <command> [<args>]''')
-    parser.add_argument('-n' , help='create new item in today list' , nargs='+')
+    parser = argparse.ArgumentParser(description='Create to-do and shopping list (the today checklist is by default ) ' , usage='''note [LISTNAME] [COMMAND]... [OPTION]...''')
+    parser.add_argument('commands' , help='<listname> <new-add-del-rem-don>' ,default='today' ,nargs='+')
+    parser.add_argument('-n' , help='create new item in today check list' , nargs='+')
     parser.add_argument('-l' , help='list all the items in today list' , nargs='?' , default='0' ,  const='1')
     parser.add_argument('-d' , help='mark selected items as done ' , nargs='+')
     parser.add_argument('-a' , help='using with -l make the list to present all the items of todo list . Default mode for -l option' , action='store_true' , default=True)
@@ -185,6 +186,7 @@ def main(argv):
     # parsing arguments 
     #
     args = parser.parse_args()
+    commands = args.commands
     new_arg = args.n 
     list_arg = args.l 
     done_arg = args.d 
