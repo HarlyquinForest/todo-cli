@@ -19,7 +19,9 @@ DONE = []
 
 def parseCommand(cmds):
     command = Command(None)
-    
+
+    cmds = makeItList(cmds)
+
     check_list_name = getCheckListName(cmds)
     if check_list_name == '':
         check_list_name = 'today'
@@ -27,6 +29,13 @@ def parseCommand(cmds):
     command = getCommandFrom(cmds)
 
     return check_list_name ,command ; 
+def makeItList(s):
+    if type(s) is not list:
+        a = []
+        a.append(s)
+        return a
+    return s 
+
 
 def getCheckListName(cmds):
     checklist = ''
@@ -68,16 +77,23 @@ def runCommands(checklist , command ):
         removeItem(checklist , value)
     elif cmd == Command.DON: 
         doneItem(checklist , value)
+    elif cmd == Command.LIS:
+        lsCheckList();
     else: 
         raise ValueError()
     
     return 
+def lsCheckList():    
+    dirs = os.listdir(APPDIR)
+    for file in dirs:
+        print(file)
+
 def showList(name):
     lines  = read_file(name)
     print(colorizeForMe(lines))
 def colorizeForMe(text):
     output = ''
-    output += f'\n{Colors.YELLOW}------ {text[0].strip()} ------\n'
+    output += f'\n{Colors.YELLOW}------ {text[0].strip()} ------{Colors.END}\n'
     for line in text[1:]:
         if line[0] == '*':
             output += f'{Colors.GREEN}   ■   {Colors.CROSSED}{line[1:]}{Colors.END}'
@@ -255,7 +271,7 @@ def main(argv):
     # command line arguments 
     #
     parser = argparse.ArgumentParser(description='Create to-do and shopping list (the today checklist is by default ) ' , usage='''note [LISTNAME] [COMMAND]... [OPTION]...''')
-    parser.add_argument('commands' , help='<listname> <new-add-del-rem-don>' ,default='today' ,nargs='+')
+    parser.add_argument('commands' , help='<listname> <new-add-del-rem-don>' ,default='' ,nargs='*')
     parser.add_argument('-n' , help='create new item in today check list' , nargs='+')
     parser.add_argument('-l' , help='list all the items in today list' , nargs='?' , default='0' ,  const='1')
     parser.add_argument('-d' , help='mark selected items as done ' , nargs='+')
@@ -280,7 +296,6 @@ def main(argv):
     # each argument instructions 
     #
     parsed_commands = parseCommand(commands)
-    # print(parsed_commands)
     runCommands(parsed_commands[0] , parsed_commands[1])
     if new_arg is not None : 
         message = ' '.join(new_arg)
